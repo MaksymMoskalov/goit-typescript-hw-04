@@ -10,10 +10,12 @@ import noop from "lodash/noop";
 type MenuIds = "first" | "second" | "last";
 type Menu = { id: MenuIds; title: string };
 
+const baseMenu: Menu = { id: "first", title: "default" };
+
 type SelectedMenu = { id: MenuIds };
 
 type MenuAction = {
-  onSelectedMenu: React.Dispatch<React.SetStateAction<SelectedMenu | null>>;
+  onSelectedMenu: React.Dispatch<React.SetStateAction<SelectedMenu>>;
 };
 
 type PropsProvider = {
@@ -21,9 +23,9 @@ type PropsProvider = {
 };
 
 const MenuSelectedContext = createContext<{
-  selectedMenu: SelectedMenu | null;
+  selectedMenu: SelectedMenu;
 }>({
-  selectedMenu: null,
+  selectedMenu: baseMenu,
 });
 
 const MenuActionContext = createContext<MenuAction>({
@@ -31,7 +33,7 @@ const MenuActionContext = createContext<MenuAction>({
 });
 
 function MenuProvider({ children }: PropsProvider) {
-  const [selectedMenu, setSelectedMenu] = useState<SelectedMenu | null>(null);
+  const [selectedMenu, setSelectedMenu] = useState<SelectedMenu>(baseMenu);
 
   const menuContextAction = useMemo(
     () => ({
@@ -69,9 +71,7 @@ function MenuComponent({ menus }: PropsMenu) {
       {menus.map((menu) => (
         <div key={menu.id} onClick={() => onSelectedMenu({ id: menu.id })}>
           {menu.title}{" "}
-          {selectedMenu && selectedMenu.id === menu.id
-            ? "Selected"
-            : "Not selected"}
+          {selectedMenu.id === menu.id ? "Selected" : "Not selected"}
         </div>
       ))}
     </>
